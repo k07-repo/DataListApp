@@ -5,14 +5,18 @@ import java.awt.*;
 
 public class DataWindow extends JFrame {
 
-    private JTextArea outputArea = new JTextArea();
-
     private JTextField weaponField = new JTextField();
     private JTextField versionField = new JTextField();
 
+    private DatabaseOperations dbOps = null;
+
     public DataWindow() {
+
+        dbOps = new DatabaseOperations();
+        dbOps.startConnection();
+
         this.setTitle("Data List App");
-        this.setLayout(new GridLayout(4, 1));
+        this.setLayout(new GridLayout(3, 1));
 
         JPanel inputPanel = new JPanel(new GridLayout(2, 1));
         inputPanel.add(componentWithLabel(weaponField, "Weapon Type"));
@@ -24,11 +28,9 @@ public class DataWindow extends JFrame {
 
         JButton startButton = new JButton();
         startButton.addActionListener(e -> {
-            outputArea.setText(DatabaseOperations.queryResults());
+            setupTable(dbOps.queryResults(weaponField.getText(), versionField.getText()));
         });
         this.add(startButton);
-        JPanel outputPanel = wrapInScrollPaneAndPanel(outputArea, "Output");
-        this.add(outputPanel);
     }
 
     public JPanel wrapInScrollPaneAndPanel(Component c, String name) {
@@ -44,6 +46,15 @@ public class DataWindow extends JFrame {
         panel.add(new JLabel(name));
         panel.add(c);
         return panel;
+    }
+
+    public void setupTable(String[][] data) {
+        String[] columns = {"Name", "Version"};
+        outputTable = new JTable(data, columns);
+
+        JFrame newWindow = new TableWindow(outputTable);
+        newWindow.setSize(500, 500);
+        newWindow.setVisible(true);
     }
 
 }
