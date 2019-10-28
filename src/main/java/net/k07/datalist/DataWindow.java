@@ -1,6 +1,7 @@
 package net.k07.datalist;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
 public class DataWindow extends JFrame {
@@ -9,6 +10,8 @@ public class DataWindow extends JFrame {
     private JTextField versionField = new JTextField();
 
     private DatabaseOperations dbOps = null;
+
+    private String[] takenChoices = {"Don't Filter", "Stolen", "Not Stolen"};
 
     public DataWindow() {
 
@@ -21,6 +24,10 @@ public class DataWindow extends JFrame {
         JPanel inputPanel = new JPanel(new GridLayout(2, 1));
         inputPanel.add(componentWithLabel(weaponField, "Weapon Type"));
         inputPanel.add(componentWithLabel(versionField, "Version Type"));
+
+        JComboBox takenBox = new JComboBox(takenChoices);
+        inputPanel.add(componentWithLabel(takenBox, "Filter Option"));
+
         this.add(inputPanel);
 
         JPanel statisticsPanel = new JPanel();
@@ -48,9 +55,9 @@ public class DataWindow extends JFrame {
         return panel;
     }
 
-    public void setupTable(String[][] data) {
+    public void setupTable(DefaultTableModel model) {
         String[] columns = {"Name", "Version"};
-        JTable outputTable = new JTable(data, columns);
+        JTable outputTable = new JTable(model);
         JFrame newWindow = new TableWindow(outputTable);
         newWindow.setSize(500, 500);
         newWindow.setVisible(true);

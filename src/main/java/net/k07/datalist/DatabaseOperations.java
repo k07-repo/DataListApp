@@ -1,49 +1,59 @@
 package net.k07.datalist;
 
+import com.sun.xml.internal.ws.api.streaming.XMLStreamReaderFactory;
+
+import javax.swing.table.DefaultTableModel;
 import java.sql.*;
+import java.util.Vector;
 
 public class DatabaseOperations {
 
     private Connection conn = null;
 
-    public String[][] queryResults(String weaponType, String version) {
-
+    public DefaultTableModel queryResults(String weaponType, String version) {
         String query = "SELECT * FROM spriteData";
 
         if (!weaponType.equals("")) {
-            query += "WHERE type = " + weaponType;
+            query += " WHERE type = " + weaponType;
         }
         if (!version.equals("")) {
             if (!weaponType.equals("")) {
-                query += "AND ";
+                query += " AND";
             } else {
-                query += "WHERE ";
+                query += " WHERE";
             }
-            query += "version = " + version;
+            query += " version = " + version;
         }
-
-        String[][] result = new String[256][2];
-
         try {
             Statement st = conn.createStatement();
             ResultSet rs = st.executeQuery(query);
 
-            int pos = 0;
-            while (rs.next()) {
+            return createModel(rs);
 
-                String nameResult = rs.getString("name");
-                String versionResult = rs.getString("version");
-                result[pos][0] = nameResult;
-                result[pos][1] = versionResult;
-                pos++;
-            }
-
-            st.close();
         } catch (SQLException e) {
             return null;
         }
+    }
 
-        return result;
+    public static DefaultTableModel createModel(ResultSet rs) throws SQLException {
+        ResultSetMetaData meta = rs.getMetaData();
+
+        Vector<Object> columnNames = new Vector<>();
+        int columnCount = meta.getColumnCount();
+        for(int column = 1; column < columnCount; column++) {
+            columnNames.add(meta.getColumnName(column));
+        }
+
+        Vector<Vector<Object>> data = new Vector<>();
+        while(rs.next()) {
+            Vector<Object> list = new Vector<>();
+            for(int column = 1; column < columnCount; column++) {
+                list.add(rs.getObject(column).toString());
+            }
+            data.add(list);
+        }
+
+        return new DefaultTableModel(data, columnNames);
     }
 
     public void startConnection() {
