@@ -49,7 +49,7 @@ public class DatabaseOperations {
     }
 
     public DefaultTableModel executeQuery(String query) {
-        System.out.println(query);
+        System.out.println(query); //debug
 
         try {
             Statement st = conn.createStatement();
@@ -64,7 +64,6 @@ public class DatabaseOperations {
 
     public int getCount(String query) {
         String newQuery = query.replace("SELECT *", "SELECT COUNT(*)");
-        System.out.println(newQuery);
         try {
             Statement st = conn.createStatement();
             ResultSet rs = st.executeQuery(newQuery);
@@ -75,9 +74,6 @@ public class DatabaseOperations {
         } catch (SQLException e) {
             return -1;
         }
-
-
-
     }
 
     public static DefaultTableModel createModel(ResultSet rs) throws SQLException {
@@ -85,15 +81,21 @@ public class DatabaseOperations {
 
         Vector<Object> columnNames = new Vector<>();
         int columnCount = meta.getColumnCount();
-        for(int column = 1; column < columnCount; column++) {
+        for(int column = 1; column <= columnCount; column++) {
             columnNames.add(meta.getColumnName(column));
         }
 
         Vector<Vector<Object>> data = new Vector<>();
         while(rs.next()) {
             Vector<Object> list = new Vector<>();
-            for(int column = 1; column < columnCount; column++) {
-                list.add(rs.getObject(column).toString());
+            for(int column = 1; column <= columnCount; column++) {
+                Object object = rs.getObject(column);
+                if(object == null) {
+                    list.add("");
+                }
+                else {
+                    list.add(object.toString());
+                }
             }
             data.add(list);
         }
@@ -104,12 +106,6 @@ public class DatabaseOperations {
     public void startConnection() {
         if (conn != null) {
             return;
-        }
-
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
         }
 
         // auto close connection

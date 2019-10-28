@@ -13,8 +13,10 @@ public class DataWindow extends JFrame {
     private JTextField weaponField = new JTextField();
     private JTextField versionField = new JTextField();
 
-    private DatabaseOperations dbOps = null;
+    public JCheckBox customOperationBox = new JCheckBox();
+    public JTextArea customQueryArea = new JTextArea();
 
+    private DatabaseOperations dbOps = null;
     private String[] takenChoices = {"Don't Filter", "Stolen", "Not Stolen"};
 
     public DataWindow() {
@@ -25,21 +27,49 @@ public class DataWindow extends JFrame {
         this.setTitle("Data List App");
         this.setLayout(new GridLayout(3, 1));
 
-        JPanel inputPanel = new JPanel(new GridLayout(3, 1));
+        JPanel inputPanel = new JPanel(new GridLayout(4, 1));
         inputPanel.add(componentWithLabel(weaponField, "Weapon Type"));
         inputPanel.add(componentWithLabel(versionField, "Version Type"));
 
         JComboBox takenBox = new JComboBox(takenChoices);
         inputPanel.add(componentWithLabel(takenBox, "Filter Option"));
+        inputPanel.add(componentWithLabel(customOperationBox, "Use Custom SQL Query"));
+
+        customOperationBox.addItemListener(e -> {
+            boolean value = customOperationBox.isSelected();
+
+            weaponField.setEnabled(!value);
+            versionField.setEnabled(!value);
+            takenBox.setEnabled(!value);
+
+            customQueryArea.setEnabled(value);
+
+            redraw();
+
+
+        });
 
         this.add(inputPanel);
 
-        JPanel statisticsPanel = new JPanel();
-        this.add(statisticsPanel);
+        customQueryArea.setEnabled(false);
+        this.add(wrapInScrollPaneAndPanel(customQueryArea, "Custom query"));
 
         JButton startButton = new JButton();
         startButton.addActionListener(e -> {
-            String query = dbOps.generateQuery(weaponField.getText(), versionField.getText(), DatabaseOperations.getOption(takenBox.getSelectedIndex()));
+            String query = null;
+            if(customOperationBox.isSelected()) {
+                query = customQueryArea.getText();
+
+                String lowercase = query.toLowerCase();
+                if(lowercase.contains("delete") || lowercase.contains("drop")) {
+                    this.showErrorMessage("For safety reasons, this program does not execute deletion queries. Do them in the dedicated control panel.");
+                    return;
+                }
+            }
+            else {
+                query = dbOps.generateQuery(weaponField.getText(), versionField.getText(), DatabaseOperations.getOption(takenBox.getSelectedIndex()));
+            }
+
             setupTable(dbOps.executeQuery(query), dbOps.getCount(query));
         });
         startButton.setText("Get Results");
@@ -66,14 +96,23 @@ public class DataWindow extends JFrame {
         JTable outputTable = new JTable(model);
         outputTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
+        /*
         TableColumnModel columnModel = outputTable.getColumnModel();
         for(int i = 0; i < NUM_COLUMNS; i++) {
             columnModel.getColumn(i).setPreferredWidth(COLUMN_WIDTHS[i]);
-        }
+        }*/
 
         JFrame newWindow = new TableWindow(outputTable, count);
         newWindow.setSize(500, 500);
         newWindow.setVisible(true);
     }
 
+    public void redraw() {
+        this.revalidate();
+        this.repaint();
+    }
+
+    private void showErrorMessage(String s) {
+        JOptionPane.showMessageDialog(this, s, "Error", JOptionPane.ERROR_MESSAGE);
+    }
 }

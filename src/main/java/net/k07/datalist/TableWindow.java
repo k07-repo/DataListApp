@@ -14,6 +14,5 @@ public class TableWindow extends JFrame {
 
         JLabel label = new JLabel("Number of records returned: " + count);
         this.add(label, BorderLayout.SOUTH);
-
     }
 }
