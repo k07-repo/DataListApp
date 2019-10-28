@@ -14,7 +14,7 @@ public class DatabaseOperations {
 
     private Connection conn = null;
 
-    public DefaultTableModel queryResults(String weaponType, String version, FilterOptions filterOption ) {
+    public String generateQuery(String weaponType, String version, FilterOptions filterOption) {
         String query = "SELECT * FROM spriteData";
 
         //there's almost certainly a better way to do this, will fix it eventually
@@ -43,9 +43,12 @@ public class DatabaseOperations {
             else {
                 query += " stolen = false";
             }
-
         }
 
+        return query;
+    }
+
+    public DefaultTableModel executeQuery(String query) {
         System.out.println(query);
 
         try {
@@ -57,6 +60,24 @@ public class DatabaseOperations {
         } catch (SQLException e) {
             return null;
         }
+    }
+
+    public int getCount(String query) {
+        String newQuery = query.replace("SELECT *", "SELECT COUNT(*)");
+        System.out.println(newQuery);
+        try {
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery(newQuery);
+
+            rs.next();
+            return rs.getInt(1);
+
+        } catch (SQLException e) {
+            return -1;
+        }
+
+
+
     }
 
     public static DefaultTableModel createModel(ResultSet rs) throws SQLException {

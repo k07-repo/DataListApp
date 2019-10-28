@@ -39,7 +39,8 @@ public class DataWindow extends JFrame {
 
         JButton startButton = new JButton();
         startButton.addActionListener(e -> {
-            setupTable(dbOps.queryResults(weaponField.getText(), versionField.getText(), DatabaseOperations.getOption(takenBox.getSelectedIndex())));
+            String query = dbOps.generateQuery(weaponField.getText(), versionField.getText(), DatabaseOperations.getOption(takenBox.getSelectedIndex()));
+            setupTable(dbOps.executeQuery(query), dbOps.getCount(query));
         });
         startButton.setText("Get Results");
         this.add(startButton);
@@ -60,18 +61,17 @@ public class DataWindow extends JFrame {
         return panel;
     }
 
-    public void setupTable(DefaultTableModel model) {
+    public void setupTable(DefaultTableModel model, int count) {
         String[] columns = {"Name", "Version"};
         JTable outputTable = new JTable(model);
         outputTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
         TableColumnModel columnModel = outputTable.getColumnModel();
-
         for(int i = 0; i < NUM_COLUMNS; i++) {
             columnModel.getColumn(i).setPreferredWidth(COLUMN_WIDTHS[i]);
         }
 
-        JFrame newWindow = new TableWindow(outputTable);
+        JFrame newWindow = new TableWindow(outputTable, count);
         newWindow.setSize(500, 500);
         newWindow.setVisible(true);
     }
