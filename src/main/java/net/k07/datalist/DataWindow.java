@@ -50,8 +50,7 @@ public class DataWindow extends JFrame {
 
     public void setupTable(String[][] data) {
         String[] columns = {"Name", "Version"};
-        outputTable = new JTable(data, columns);
-
+        JTable outputTable = new JTable(data, columns);
         JFrame newWindow = new TableWindow(outputTable);
         newWindow.setSize(500, 500);
         newWindow.setVisible(true);
