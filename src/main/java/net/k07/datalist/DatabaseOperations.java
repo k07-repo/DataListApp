@@ -8,11 +8,16 @@ import java.util.Vector;
 
 public class DatabaseOperations {
 
+    enum FilterOptions {
+        NO_FILTER, TAKEN, NOT_TAKEN
+    }
+
     private Connection conn = null;
 
-    public DefaultTableModel queryResults(String weaponType, String version) {
+    public DefaultTableModel queryResults(String weaponType, String version, FilterOptions filterOption ) {
         String query = "SELECT * FROM spriteData";
 
+        //there's almost certainly a better way to do this, will fix it eventually
         if (!weaponType.equals("")) {
             query += " WHERE type = " + weaponType;
         }
@@ -24,6 +29,25 @@ public class DatabaseOperations {
             }
             query += " version = " + version;
         }
+        if (!(filterOption == FilterOptions.NO_FILTER)) {
+            if (!weaponType.equals("") || !version.equals("")) {
+                query += " AND";
+            }
+            else {
+                query += " WHERE";
+            }
+
+            if (filterOption == FilterOptions.TAKEN) {
+                query += " stolen = true";
+            }
+            else {
+                query += " stolen = false";
+            }
+
+        }
+
+        System.out.println(query);
+
         try {
             Statement st = conn.createStatement();
             ResultSet rs = st.executeQuery(query);
@@ -82,6 +106,19 @@ public class DatabaseOperations {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+    }
+
+    public static FilterOptions getOption(int index) {
+        switch(index) {
+            case 0:
+                return FilterOptions.NO_FILTER;
+            case 1:
+                return FilterOptions.TAKEN;
+            case 2:
+                return FilterOptions.NOT_TAKEN;
+        }
+        return FilterOptions.NO_FILTER;
 
     }
 }
