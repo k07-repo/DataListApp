@@ -56,21 +56,34 @@ public class DataWindow extends JFrame {
 
         JButton startButton = new JButton();
         startButton.addActionListener(e -> {
-            String query = null;
+
             if(customOperationBox.isSelected()) {
-                query = customQueryArea.getText();
+                String query = customQueryArea.getText();
 
                 String lowercase = query.toLowerCase();
                 if(lowercase.contains("delete") || lowercase.contains("drop")) {
                     this.showErrorMessage("For safety reasons, this program does not execute deletion queries. Do them in the dedicated control panel.");
                     return;
                 }
+                else if(lowercase.contains("insert")) {
+                    int rowsChanged = dbOps.executeUpdateQuery(query);
+                    if(rowsChanged <= 0) {
+                        this.showErrorMessage("No rows were changed!");
+                    }
+                    else {
+                        this.showSuccessMessage(rowsChanged + " rows added successfully.");
+                    }
+                }
+                else {
+                    setupTable(dbOps.executeSelectQuery(query), dbOps.getCount(query));
+                }
             }
             else {
-                query = dbOps.generateQuery(weaponField.getText(), versionField.getText(), DatabaseOperations.getOption(takenBox.getSelectedIndex()));
+                String query = dbOps.generateQuery(weaponField.getText(), versionField.getText(), DatabaseOperations.getOption(takenBox.getSelectedIndex()));
+                setupTable(dbOps.executeSelectQuery(query), dbOps.getCount(query));
             }
 
-            setupTable(dbOps.executeQuery(query), dbOps.getCount(query));
+
         });
         startButton.setText("Get Results");
         this.add(startButton);
@@ -114,5 +127,9 @@ public class DataWindow extends JFrame {
 
     private void showErrorMessage(String s) {
         JOptionPane.showMessageDialog(this, s, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    private void showSuccessMessage(String s) {
+        JOptionPane.showMessageDialog(this, s, "Success!", JOptionPane.INFORMATION_MESSAGE);
     }
 }

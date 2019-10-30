@@ -48,7 +48,7 @@ public class DatabaseOperations {
         return query;
     }
 
-    public DefaultTableModel executeQuery(String query) {
+    public DefaultTableModel executeSelectQuery(String query) {
         System.out.println(query); //debug
 
         try {
@@ -59,6 +59,15 @@ public class DatabaseOperations {
 
         } catch (SQLException e) {
             return null;
+        }
+    }
+
+    public int executeUpdateQuery(String query) {
+        try {
+            Statement st = conn.createStatement();
+            return st.executeUpdate(query);
+        } catch (SQLException e) {
+            return -1;
         }
     }
 
