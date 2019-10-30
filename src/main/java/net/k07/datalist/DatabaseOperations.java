@@ -19,7 +19,7 @@ public class DatabaseOperations {
 
         //there's almost certainly a better way to do this, will fix it eventually
         if (!weaponType.equals("")) {
-            query += " WHERE type = " + weaponType;
+            query += " WHERE type = \"" + weaponType + "\"";
         }
         if (!version.equals("")) {
             if (!weaponType.equals("")) {
@@ -72,19 +72,18 @@ public class DatabaseOperations {
     }
 
     public int getCount(String query) {
-        String newQuery = query.replace("SELECT *", "SELECT COUNT(*)");
         try {
             Statement st = conn.createStatement();
-            ResultSet rs = st.executeQuery(newQuery);
+            ResultSet rs = st.executeQuery(query);
 
-            rs.next();
-            return rs.getInt(1);
+            rs.last();
+            return rs.getRow();
 
         } catch (SQLException e) {
             return -1;
         }
     }
-
+    
     public static DefaultTableModel createModel(ResultSet rs) throws SQLException {
         ResultSetMetaData meta = rs.getMetaData();
 

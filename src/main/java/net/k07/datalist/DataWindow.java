@@ -20,6 +20,7 @@ public class DataWindow extends JFrame {
     private String[] takenChoices = {"Don't Filter", "Stolen", "Not Stolen"};
 
     public DataWindow() {
+        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         dbOps = new DatabaseOperations();
         dbOps.startConnection();
@@ -45,8 +46,6 @@ public class DataWindow extends JFrame {
             customQueryArea.setEnabled(value);
 
             redraw();
-
-
         });
 
         this.add(inputPanel);
