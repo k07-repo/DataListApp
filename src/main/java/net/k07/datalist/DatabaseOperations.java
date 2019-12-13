@@ -83,7 +83,7 @@ public class DatabaseOperations {
             return -1;
         }
     }
-    
+
     public static DefaultTableModel createModel(ResultSet rs) throws SQLException {
         ResultSetMetaData meta = rs.getMetaData();
 
