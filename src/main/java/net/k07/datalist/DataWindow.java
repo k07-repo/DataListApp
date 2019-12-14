@@ -12,6 +12,7 @@ public class DataWindow extends JFrame {
 
     private JTextField weaponField = new JTextField();
     private JTextField versionField = new JTextField();
+    private JTextField tableNameField = new JTextField();
 
     public JCheckBox customOperationBox = new JCheckBox();
     public JTextArea customQueryArea = new JTextArea();
@@ -26,11 +27,24 @@ public class DataWindow extends JFrame {
         dbOps.startConnection();
 
         this.setTitle("Data List App");
-        this.setLayout(new GridLayout(3, 1));
+        this.setLayout(new GridLayout(5, 1));
 
+        JPanel insertionPanel = new JPanel(new GridLayout(2, 1));
+        insertionPanel.add(componentWithLabel(tableNameField, "Table Name"));
+
+        JButton insertionWindowOpener = new JButton("Open Insertion Window");
+        insertionWindowOpener.addActionListener(e -> {
+            InsertionWindow window = new InsertionWindow(dbOps.getColumnNamesForTable(tableNameField.getText()), tableNameField.getText(),  dbOps);
+            window.pack();
+            window.setVisible(true);
+        });
+        insertionPanel.add(insertionWindowOpener);
+        this.add(insertionPanel);
+        
         JPanel inputPanel = new JPanel(new GridLayout(4, 1));
         inputPanel.add(componentWithLabel(weaponField, "Weapon Type"));
         inputPanel.add(componentWithLabel(versionField, "Version Type"));
+
 
         JComboBox takenBox = new JComboBox(takenChoices);
         inputPanel.add(componentWithLabel(takenBox, "Filter Option"));
@@ -88,7 +102,7 @@ public class DataWindow extends JFrame {
         this.add(startButton);
     }
 
-    public JPanel wrapInScrollPaneAndPanel(Component c, String name) {
+    public static JPanel wrapInScrollPaneAndPanel(Component c, String name) {
         JScrollPane pane = new JScrollPane(c);
         JPanel panel = new JPanel(new GridLayout());
         panel.setBorder(BorderFactory.createTitledBorder(name));
@@ -96,7 +110,7 @@ public class DataWindow extends JFrame {
         return panel;
     }
 
-    public JPanel componentWithLabel(Component c, String name) {
+    public static JPanel componentWithLabel(Component c, String name) {
         JPanel panel = new JPanel(new GridLayout(1, 2));
         panel.add(new JLabel(name));
         panel.add(c);

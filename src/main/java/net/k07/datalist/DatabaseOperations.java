@@ -4,6 +4,8 @@ import com.sun.xml.internal.ws.api.streaming.XMLStreamReaderFactory;
 
 import javax.swing.table.DefaultTableModel;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 public class DatabaseOperations {
@@ -13,6 +15,27 @@ public class DatabaseOperations {
     }
 
     private Connection conn = null;
+
+    public void executeInsertQuery(String tableName, ArrayList<String> args) {
+        String query = "INSERT INTO " + tableName + " VALUES (";
+
+        for(int k = 0; k < args.size(); k++) {
+
+            if(k != 2) {
+                query += "\"" + args.get(k) + "\"";
+            }
+            else {
+                query += args.get(k);
+            }
+
+            if(k < args.size() - 1) {
+                query += ", ";
+            }
+        }
+        query += ")";
+        System.out.println(query);
+        executeUpdateQuery(query);
+    }
 
     public String generateQuery(String weaponType, String version, FilterOptions filterOption) {
         String query = "SELECT * FROM spriteData";
@@ -46,6 +69,25 @@ public class DatabaseOperations {
         }
 
         return query;
+    }
+
+    public ArrayList<String> getColumnNamesForTable(String tableName) {
+        String query = "SELECT * FROM " + tableName;
+        try {
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery(query);
+            ResultSetMetaData meta = rs.getMetaData();
+            int columnCount = meta.getColumnCount();
+
+            ArrayList<String> columnData = new ArrayList<>();
+            for (int i = 1; i <= columnCount; i++ ) {
+                columnData.add(meta.getColumnName(i));
+            }
+            return columnData;
+
+        } catch (SQLException e) {
+            return null;
+        }
     }
 
     public DefaultTableModel executeSelectQuery(String query) {
@@ -144,6 +186,5 @@ public class DatabaseOperations {
                 return FilterOptions.NOT_TAKEN;
         }
         return FilterOptions.NO_FILTER;
-
     }
 }
