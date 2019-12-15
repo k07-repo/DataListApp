@@ -153,19 +153,20 @@ public class DatabaseOperations {
         return new DefaultTableModel(data, columnNames);
     }
 
-    public void startConnection() {
+    public boolean startConnection(String url, String username, String password) {
         if (conn != null) {
-            return;
+            return false;
         }
 
         // auto close connection
         try {
-            conn = DriverManager.getConnection(
-                    "jdbc:mysql://127.0.0.1:3306/myDB", "root", "MyNewPass");
+            conn = DriverManager.getConnection(url, username, password);
             if (conn != null) {
                 System.out.println("Connected to the database!");
+                return true;
             } else {
                 System.out.println("Failed to make connection!");
+                return false;
             }
 
         } catch (SQLException e) {
@@ -173,7 +174,7 @@ public class DatabaseOperations {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        return false;
     }
 
     public static FilterOptions getOption(int index) {

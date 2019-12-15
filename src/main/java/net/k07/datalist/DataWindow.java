@@ -20,17 +20,15 @@ public class DataWindow extends JFrame {
     private DatabaseOperations dbOps = null;
     private String[] takenChoices = {"Don't Filter", "Stolen", "Not Stolen"};
 
-    public DataWindow() {
+    public DataWindow(DatabaseOperations dbOps) {
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
-        dbOps = new DatabaseOperations();
-        dbOps.startConnection();
+        this.dbOps = dbOps;
 
         this.setTitle("Data List App");
         this.setLayout(new GridLayout(5, 1));
 
         JPanel insertionPanel = new JPanel(new GridLayout(2, 1));
-        insertionPanel.add(componentWithLabel(tableNameField, "Table Name"));
+        insertionPanel.add(ComponentUtils.componentWithLabel(tableNameField, "Table Name"));
 
         JButton insertionWindowOpener = new JButton("Open Insertion Window");
         insertionWindowOpener.addActionListener(e -> {
@@ -42,13 +40,13 @@ public class DataWindow extends JFrame {
         this.add(insertionPanel);
         
         JPanel inputPanel = new JPanel(new GridLayout(4, 1));
-        inputPanel.add(componentWithLabel(weaponField, "Weapon Type"));
-        inputPanel.add(componentWithLabel(versionField, "Version Type"));
+        inputPanel.add(ComponentUtils.componentWithLabel(weaponField, "Weapon Type"));
+        inputPanel.add(ComponentUtils.componentWithLabel(versionField, "Version Type"));
 
 
         JComboBox takenBox = new JComboBox(takenChoices);
-        inputPanel.add(componentWithLabel(takenBox, "Filter Option"));
-        inputPanel.add(componentWithLabel(customOperationBox, "Use Custom SQL Query"));
+        inputPanel.add(ComponentUtils.componentWithLabel(takenBox, "Filter Option"));
+        inputPanel.add(ComponentUtils.componentWithLabel(customOperationBox, "Use Custom SQL Query"));
 
         customOperationBox.addItemListener(e -> {
             boolean value = customOperationBox.isSelected();
@@ -107,13 +105,6 @@ public class DataWindow extends JFrame {
         JPanel panel = new JPanel(new GridLayout());
         panel.setBorder(BorderFactory.createTitledBorder(name));
         panel.add(pane);
-        return panel;
-    }
-
-    public static JPanel componentWithLabel(Component c, String name) {
-        JPanel panel = new JPanel(new GridLayout(1, 2));
-        panel.add(new JLabel(name));
-        panel.add(c);
         return panel;
     }
 
