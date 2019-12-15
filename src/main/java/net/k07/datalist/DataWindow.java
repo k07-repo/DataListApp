@@ -23,6 +23,7 @@ public class DataWindow extends JFrame {
     public DataWindow(DatabaseOperations dbOps) {
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.dbOps = dbOps;
+        this.setSize(500, 600);
 
         this.setTitle("Data List App");
         this.setLayout(new GridLayout(5, 1));

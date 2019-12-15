@@ -1,11 +1,9 @@
 package net.k07.datalist;
 
-import com.sun.xml.internal.ws.api.streaming.XMLStreamReaderFactory;
-
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Vector;
 
 public class DatabaseOperations {
@@ -86,6 +84,7 @@ public class DatabaseOperations {
             return columnData;
 
         } catch (SQLException e) {
+            showErrorDialog(e);
             return null;
         }
     }
@@ -109,6 +108,7 @@ public class DatabaseOperations {
             Statement st = conn.createStatement();
             return st.executeUpdate(query);
         } catch (SQLException e) {
+            showErrorDialog(e);
             return -1;
         }
     }
@@ -122,6 +122,7 @@ public class DatabaseOperations {
             return rs.getRow();
 
         } catch (SQLException e) {
+            showErrorDialog(e);
             return -1;
         }
     }
@@ -170,7 +171,7 @@ public class DatabaseOperations {
             }
 
         } catch (SQLException e) {
-            System.err.format("SQL State: %s\n%s", e.getSQLState(), e.getMessage());
+            showErrorDialog(e);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -187,5 +188,9 @@ public class DatabaseOperations {
                 return FilterOptions.NOT_TAKEN;
         }
         return FilterOptions.NO_FILTER;
+    }
+
+    private void showErrorDialog(Exception e) {
+        JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
 }
